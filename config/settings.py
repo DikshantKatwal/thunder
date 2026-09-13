@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-lon+_92+&=*6xu^4+*daseu%-^_zqr-id3yz2_k3i=q#@h(0nt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -71,9 +71,28 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  # Your React Local Development port
+    "http://localhost:5174",  # Your React Local Development port
     "http://127.0.0.1:3000",
+    "http://thunder.localhost:5173",
+    "http://thunder.localhost:5174",
     # "https://yourfrontend.com" <--- Add your production web domain here later
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Your React Local Development port
+    "http://localhost:5174",  # Your React Local Development port
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    # "https://yourfrontend.com" <--- Add your production web domain here later
+]
+
+# Allow tenant sub-domains in dev, e.g. http://thunder.localhost:5174
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://[a-z0-9-]+\.localhost:517[34]$",
+]
+
+# Needed only if the frontend sends cookies / auth credentials with requests
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
@@ -213,9 +232,19 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 REST_FRAMEWORK = {
+    "DATE_INPUT_FORMATS": [
+        ("%Y-%m-%d"),
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "DEFAULT_PAGINATION_CLASS": "config.backend.pagination.DefaultPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.OrderingFilter",
+        "rest_framework.filters.SearchFilter",
+    ],
 }
 
 FRONTEND_URL = "http://localhost:5173"

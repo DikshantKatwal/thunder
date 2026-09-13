@@ -1,9 +1,10 @@
 from rest_framework.generics import  CreateAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
-from staff.models import StaffInvitation
-from staff.serializers import StaffInvitationSerializer, StaffInvitationSerializer, UseStaffInvitationSerializer
+from staff.models import Staff, StaffInvitation
+from staff.serializers import CreateStaffSerializer, StaffInvitationSerializer, StaffInvitationSerializer, StaffSerializer, UseStaffInvitationSerializer
 from rest_framework.views import  APIView
+from rest_framework import viewsets
 
 
 
@@ -39,3 +40,23 @@ class CreateInvitedUserStaff(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.save()
         return Response(data)
+
+
+
+class StaffViewSet(viewsets.ModelViewSet):
+    """
+    CRUD for Staff
+    """
+
+    serializer_class = StaffSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Staff.objects.all()
+    search_fields = [
+        "user__given_name",
+    ]
+
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return CreateStaffSerializer
+        return super().get_serializer_class()

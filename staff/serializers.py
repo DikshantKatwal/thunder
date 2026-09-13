@@ -7,7 +7,16 @@ from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from user.serializers import CreateUserSerializer
+from user.serializers import CreateUserSerializer, UserSerializer
+
+
+class StaffSerializer(serializers.ModelSerializer):
+    user_detail = UserSerializer(read_only=True, source="user")
+    branch_detail = BranchSerializer(read_only=True, source="branch")
+    class Meta:
+        model= Staff
+        fields="__all__"  
+
 
 class StaffInvitationSerializer(serializers.ModelSerializer):
     branch_id = serializers.PrimaryKeyRelatedField(source="branch", queryset=Branch.objects.all(), required=True)
@@ -84,4 +93,30 @@ class UseStaffInvitationSerializer(serializers.ModelSerializer):
             "refresh": str(refresh)
             }
         return data
-    
+
+
+
+class CreateStaffSerializer(serializers.ModelSerializer):
+    user = CreateUserSerializer(write_only=True)
+    branch = serializers.PrimaryKeyRelatedField(
+        queryset=Branch.objects.all()
+    )
+    class Meta:
+        model= Staff
+        fields=[
+            "id",
+            "user",
+            "branch",
+            "is_active",
+            "joined_at"
+        ]  
+
+
+    def create(self,  validated_data):
+        user = validated_data.get("user")
+        serializer = CreateUserSerializer(data=user)
+        serializer.is_valid(raise_exception=True)
+        user=serializer.save()
+        validated_data["user"] = user
+        instance = Staff.objects.create(**validated_data)
+        return instance
