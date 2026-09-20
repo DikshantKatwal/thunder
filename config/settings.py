@@ -50,6 +50,8 @@ TENANT_APPS = (
     "user",
     "branch",
     "staff",
+    "settings.room_type",
+    "room",
 )
 INSTALLED_APPS = list(SHARED_APPS) + [
     app for app in TENANT_APPS if app not in SHARED_APPS
@@ -75,6 +77,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://thunder.localhost:5173",
     "http://thunder.localhost:5174",
+    "http://thunder.localhost:4173",
     # "https://yourfrontend.com" <--- Add your production web domain here later
 ]
 
@@ -83,12 +86,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",  # Your React Local Development port
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
+    "http://127.0.0.1:4173",
     # "https://yourfrontend.com" <--- Add your production web domain here later
 ]
 
 # Allow tenant sub-domains in dev, e.g. http://thunder.localhost:5174
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://[a-z0-9-]+\.localhost:517[34]$",
+    r"^http://[a-z0-9-]+\.localhost:417[34]$",
 ]
 
 # Needed only if the frontend sends cookies / auth credentials with requests
