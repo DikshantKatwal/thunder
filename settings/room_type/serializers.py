@@ -48,6 +48,8 @@ class RoomAmenitySerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
+    def validate_name(self, obj):
+        return str(obj).title()
 
 class RoomTypeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=True)
